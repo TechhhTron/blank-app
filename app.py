@@ -5,7 +5,15 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 
-API_BASE_URL = os.getenv("TRADEMATIC_API_URL", "http://localhost:8000").rstrip("/")
+def get_api_base_url():
+    try:
+        secret_url = st.secrets.get("TRADEMATIC_API_URL")
+    except Exception:
+        secret_url = None
+    return os.getenv("TRADEMATIC_API_URL", secret_url or "http://localhost:8000").rstrip("/")
+
+
+API_BASE_URL = get_api_base_url()
 
 
 st.set_page_config(
