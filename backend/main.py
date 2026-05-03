@@ -1,0 +1,44 @@
+from __future__ import annotations
+
+from fastapi import FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+
+from .database import init_db
+from .routes import broker, dashboard, payment, user
+
+app = FastAPI(title="Tradematic Backend", version="1.0.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost",
+        "http://localhost:8501",
+        "http://127.0.0.1:8501",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.on_event("startup")
+def startup() -> None:
+    init_db()
+
+
+@app.get("/", response_model=None)
+def root(
+    code: str | None = Query(default=None),
+    auth_code: str | None = Query(default=None),
+    state: str | None = Query(default=None),
+):
+    if code or auth_code:
+        return broker.complete_broker_callback(code=code, auth_code=auth_code, state=state)
+    return {"ok": True, "message": "Tradematic backend is running"}
+
+
+app.include_router(user.router, prefix="/api/auth")
+app.include_router(dashboard.router, prefix="/api/dashboard")
+app.include_router(payment.router, prefix="/api/payment")
+app.include_router(broker.router, prefix="/api/broker")
