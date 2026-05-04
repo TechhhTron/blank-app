@@ -10,7 +10,8 @@ def get_api_base_url():
         secret_url = st.secrets.get("TRADEMATIC_API_URL")
     except Exception:
         secret_url = None
-    return os.getenv("TRADEMATIC_API_URL", secret_url or "http://localhost:8000").rstrip("/")
+    configured_url = os.getenv("TRADEMATIC_API_URL") or secret_url
+    return (configured_url or "https://api.thetradematic.in").rstrip("/")
 
 
 API_BASE_URL = get_api_base_url()
@@ -397,6 +398,7 @@ elif st.session_state.page == "dashboard":
                             "broker_app_id": broker_app_id,
                             "broker_client_id": broker_app_id,
                             "broker_secret_key": broker_secret_key or None,
+                            "broker_auth_code": broker_auth_code or None,
                         },
                     )
                     st.session_state.user_data = data["data"]["user"]

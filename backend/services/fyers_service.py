@@ -21,7 +21,10 @@ class FyersError(RuntimeError):
 
 
 def configured_redirect_uri() -> str:
-    return os.getenv("FYERS_REDIRECT_URI", "http://localhost")
+    return os.getenv(
+        "FYERS_REDIRECT_URI",
+        "https://api.thetradematic.in/api/broker/callback",
+    )
 
 
 def generate_auth_url(client_id: str, redirect_uri: str, state: str = "sample") -> str:

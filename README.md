@@ -9,10 +9,29 @@ The deployed Streamlit entrypoint is `streamlit_app.py`, which loads the real ap
 Set this secret in Streamlit Community Cloud when your FastAPI backend is hosted externally:
 
 ```toml
-TRADEMATIC_API_URL = "https://your-backend-domain.com"
+TRADEMATIC_API_URL = "https://api.thetradematic.in"
 ```
 
 Community Cloud does not run a separate FastAPI backend service for this app. For production, deploy `backend/` on a VPS, Render, Railway, Fly.io, AWS, or another API host, then point `TRADEMATIC_API_URL` to that backend.
+
+## VPS Backend
+
+Use these production environment values on the VPS:
+
+```bash
+APP_SECRET_KEY=replace-with-a-long-random-secret
+SQLITE_DB_PATH=/opt/tradematic/backend/tradematic.sqlite3
+FYERS_REDIRECT_URI=https://api.thetradematic.in/api/broker/callback
+FYERS_APP_ID_HASH_FORMAT=concat
+CORS_ORIGINS=https://api.thetradematic.in,https://thetradematic.in,https://www.thetradematic.in
+CORS_ALLOW_ORIGIN_REGEX=https://.*\.streamlit\.app
+```
+
+Run the backend behind Nginx/SSL:
+
+```bash
+uvicorn backend.main:app --host 127.0.0.1 --port 8000
+```
 
 ## Local Setup
 
